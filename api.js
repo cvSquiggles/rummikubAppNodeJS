@@ -68,10 +68,12 @@ router.route('/addPlayer').post(async (req, res) => {
 //Match Routes
 
 //Pull a specific match from database
-router.route('/match/:gameCode').get((request, response) => {
-    Db.getMatch_gameCode(request.params.gameCode).then(result => {
+router.route('/match').post((req, res) => {
+    const {gameCode} = req.body
+    console.log(gameCode)
+    Db.getMatch_gameCode(gameCode).then(result => {
         //console.log(result);
-        response.json(result);
+        res.json(result);
     })
 })
 

@@ -63,11 +63,14 @@ async function addPlayer(tag) {
 async function getMatch_gameCode(gameCode) {
     try {
         let pool = await sql.connect(config);
-        let match = await pool.request()
+        // if(pool){
+            let match = await pool.request()
             .input('match_gameCode', sql.Int, gameCode)
             .query("SELECT * FROM Match WHERE gameCode=@match_gameCode");
         pool.close();
-        return match.recordsets;
+        // }
+        console.log(match)
+        return match.recordset;
     } catch (error) {
         console.log(error);
     }
