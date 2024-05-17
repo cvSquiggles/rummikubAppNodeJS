@@ -43,10 +43,12 @@ router.route('/players').get((request, response) => {
 })
 
 //Pull a specific player from database
-router.route('/player/:tag').get((request, response) => {
-    Db.getPlayer_tag(request.params.tag).then(result => {
+router.route('/player').post((req, res) => {
+    const {tag} = req.body;
+    console.log(tag)
+    Db.getPlayer(tag).then(result => {
         //console.log(result);
-        response.json(result[0]);
+        res.json(result[0]);
     })
 })
 
@@ -57,7 +59,7 @@ app.get('/test', (req, res) => {
 
 //Add a new player to the database
 router.route('/addPlayer').post(async (req, res) => {
-    const {tag} = req.body
+    const {tag} = req.body;
     console.log(tag)
     await Db.addPlayer(tag).then(result => {
         // console.log(result);
@@ -69,61 +71,53 @@ router.route('/addPlayer').post(async (req, res) => {
 
 //Pull a specific match from database
 router.route('/match').post((req, res) => {
-    const {gameCode} = req.body
+    const {gameCode} = req.body;
     console.log(gameCode)
-    Db.getMatch_gameCode(gameCode).then(result => {
+    Db.getMatch(gameCode).then(result => {
         //console.log(result);
         res.json(result);
     })
 })
 
 //Add a new match to the database
-router.route('/addMatch/:p1Minutes/:p1Seconds/:p1Milli/:p1MatchScore/:p2Minutes/:p2Seconds/:p2Milli/:p2MatchScore/:roundCount/:p1/:p2').post((request, response) => {
-    Db.addMatch(request.params.p1Minutes, request.params.p1Seconds, request.params.p1Milli,
-        request.params.p1MatchScore, request.params.p2Minutes, request.params.p2Seconds,
-        request.params.p2Milli, request.params.p2MatchScore, request.params.roundCount, request.params.p1, request.params.p2
+router.route('/addMatch').post((req, res) => {
+    const {p1, p2} = req.body;
+    console.log(p1 + " " + p2)
+    Db.addMatch(p1, p2
     ).then(result => {
         //console.log(result);
-        response.json(result).status(201);
+        res.json(result).status(201);
     })
 })
 
-//Update an existing match in the database
-//router.route('/addMatch/:p1Minutes/:p1Seconds/:p1Milli/:p1MatchScore/:p2Minutes/:p2Seconds/:p2Milli/:p2MatchScore/:roundCount/:p1/:p2').post((request, response)=>{
-//    Db.addMatch(request.params.p1Minutes, request.params.p1Seconds, request.params.p1Milli,
-//        request.params.p1MatchScore, request.params.p2Minutes, request.params.p2Seconds,
-//        request.params.p2Milli, request.params.p2MatchScore, request.params.roundCount, request.params.p1, request.params.p2
-//    ).then(result => {
-//        //console.log(result);
-//        response.json(result).status(201);
-//    })
-//})
-
 //Update match times on play or pause button hit
-router.route('/updateMatch_time/:p1Minutes/:p1Seconds/:p1Milli/:p2Minutes/:p2Seconds/:p2Milli/:gameCode').put((request, response) => {
-    Db.updateMatch_time(request.params.p1Minutes, request.params.p1Seconds, request.params.p1Milli,
-        request.params.p2Minutes, request.params.p2Seconds, request.params.p2Milli, request.params.gameCode
+router.route('/matchTime').put((req, res) => {
+    const {p1Minutes, p1Seconds, p1Milli, p2Minutes, p2Seconds, p2Milli, gameCode} = req.body;
+    console.log(p1Minutes, p1Seconds, p1Milli, p2Minutes, p2Seconds, p2Milli, gameCode);
+    Db.matchTime(p1Minutes, p1Seconds, p1Milli, p2Minutes, p2Seconds, p2Milli, gameCode
     ).then(result => {
         //console.log(result);
-        response.json(result).status(201);
+        res.json(result).status(201);
     })
 })
 
 //Update match scores on submit round scores hit
-router.route('/updateMatch_score/:p1MatchScore/:p2MatchScore/:roundCount/:gameCode').put((request, response) => {
-    Db.updateMatch_score(request.params.p1MatchScore, request.params.p2MatchScore, request.params.roundCount, request.params.gameCode
+router.route('/matchScore').put((req, res) => {
+    const {p1MatchScore, p2MatchScore, roundCount, gameCode}  = req.body;
+    Db.matchScore(p1MatchScore, p2MatchScore, roundCount, gameCode
     ).then(result => {
         //console.log(result);
-        response.json(result).status(201);
+        res.json(result).status(201);
     })
 })
 
 //Update match winner on Report match hit
-router.route('/updateMatch_winner/:winner/:gameCode').put((request, response) => {
-    Db.updateMatch_winner(request.params.winner, request.params.gameCode
+router.route('/matchWinner').put((req, res) => {
+    const {winner, gameCode} = req.body;
+    Db.matchWinner(winner, gameCode
     ).then(result => {
         //console.log(result);
-        response.json(result).status(201);
+        res.json(result).status(201);
     })
 })
 

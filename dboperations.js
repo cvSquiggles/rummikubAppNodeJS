@@ -27,14 +27,15 @@ async function getPlayers() {
 //Player API functions
 
 //Search a player record based on tag
-async function getPlayer_tag(tag) {
+async function getPlayer(tag) {
     try {
         let pool = await sql.connect(config);
+        console.log('pool', pool);
         let player = await pool.request()
-            .input('player_tag', sql.VarChar, tag)
-            .query("SELECT * FROM Player WHERE tag=@player_tag");
+            .input('tag', sql.VarChar, tag)
+            .query("SELECT * FROM Player WHERE tag=@tag");
         pool.close();
-        return player.recordsets;
+        return player.recordset;
     } catch (error) {
         console.log(error);
     }
@@ -60,7 +61,7 @@ async function addPlayer(tag) {
 //Match API Functions
 
 //Search a match record base on gameCode
-async function getMatch_gameCode(gameCode) {
+async function getMatch(gameCode) {
     try {
         let pool = await sql.connect(config);
         // if(pool){
@@ -77,35 +78,27 @@ async function getMatch_gameCode(gameCode) {
 }
 
 //Add a match record base on gameCode
-async function addMatch(p1Minutes, p1Seconds, p1Milli, p1MatchScore,
-    p2Minutes, p2Seconds, p2Milli, p2MatchScore, roundCount, p1, p2) {
+async function addMatch(p1, p2) {
     try {
         let pool = await sql.connect(config);
+        console.log('pool',pool)
         let addMatch = await pool.request()
-            .input('p1Minutes', sql.Int, p1Minutes)
-            .input('p1Seconds', sql.Int, p1Seconds)
-            .input('p1Milli', sql.Int, p1Milli)
-            .input('p1MatchScore', sql.Int, p1MatchScore)
-            .input('p2Minutes', sql.Int, p2Minutes)
-            .input('p2Seconds', sql.Int, p2Seconds)
-            .input('p2Milli', sql.Int, p2Milli)
-            .input('p2MatchScore', sql.Int, p2MatchScore)
-            .input('roundCount', sql.Int, roundCount)
             .input('p1', sql.Int, p1)
             .input('p2', sql.Int, p2)
-            .query("INSERT INTO Match VALUES (@p1Minutes, @p1Seconds, @p1Milli, @p1MatchScore, @p2Minutes, @p2Seconds, @p2Milli, @p2MatchScore, @roundCount, @p1, @p2, NULL)");
+            .query("INSERT INTO Match VALUES (30, 0, 0, 0, 30, 0, 0, 0, 1, @p1, @p2, NULL)");
         pool.close();
-        return addMatch.recordsets;
+        //return addMatch.recordsets;
     } catch (error) {
         console.log(error);
     }
 }
 
 //Update match time on play or pause button hit
-async function updateMatch_time(p1Minutes, p1Seconds, p1Milli,
+async function matchTime(p1Minutes, p1Seconds, p1Milli,
     p2Minutes, p2Seconds, p2Milli, gameCode) {
     try {
         let pool = await sql.connect(config);
+        console.log('pool',pool);
         let updateMatch_time = await pool.request()
             .input('p1Minutes', sql.Int, p1Minutes)
             .input('p1Seconds', sql.Int, p1Seconds)
@@ -116,14 +109,14 @@ async function updateMatch_time(p1Minutes, p1Seconds, p1Milli,
             .input('gameCode', sql.Int, gameCode)
             .query("UPDATE Match SET p1Minutes = @p1Minutes, p1Seconds = @p1Seconds, p1Milli = @P1Milli, p2Minutes = @p2Minutes, p2Seconds = @p2Seconds, p2Milli = @p2Milli WHERE gameCode = @gameCode");
         pool.close();
-        return updateMatch_time.recordsets;
+        //return updateMatch_time.recordsets;
     } catch (error) {
         console.log(error);
     }
 }
 
 //Update match scores on submit round scores hit
-async function updateMatch_score(p1MatchScore, p2MatchScore, roundCount, gameCode) {
+async function matchScore(p1MatchScore, p2MatchScore, roundCount, gameCode) {
     try {
         let pool = await sql.connect(config);
         let updateMatch_score = await pool.request()
@@ -133,14 +126,14 @@ async function updateMatch_score(p1MatchScore, p2MatchScore, roundCount, gameCod
             .input('gameCode', sql.Int, gameCode)
             .query("UPDATE Match SET p1MatchScore = @p1MatchScore, p2MatchScore = @p2MatchScore, roundCount = @roundCount WHERE gameCode = @gameCode");
         pool.close();
-        return updateMatch_score.recordsets;
+        //return updateMatch_score.recordsets;
     } catch (error) {
         console.log(error);
     }
 }
 
 //Update match winner on Report match hit
-async function updateMatch_winner(winner, gameCode) {
+async function matchWinner(winner, gameCode) {
     try {
         let pool = await sql.connect(config);
         let updateMatch_winner = await pool.request()
@@ -148,7 +141,7 @@ async function updateMatch_winner(winner, gameCode) {
             .input('gameCode', sql.Int, gameCode)
             .query("UPDATE Match SET winner = @winner WHERE gameCode = @gameCode");
         pool.close();
-        return updateMatch_winner.recordsets;
+        //return updateMatch_winner.recordsets;
     } catch (error) {
         console.log(error);
     }
@@ -157,11 +150,11 @@ async function updateMatch_winner(winner, gameCode) {
 
 module.exports = {
     getPlayers: getPlayers,
-    getPlayer_tag: getPlayer_tag,
+    getPlayer: getPlayer,
     addPlayer: addPlayer,
-    getMatch_gameCode: getMatch_gameCode,
+    getMatch: getMatch,
     addMatch: addMatch,
-    updateMatch_time: updateMatch_time,
-    updateMatch_score: updateMatch_score,
-    updateMatch_winner: updateMatch_winner
+    matchTime: matchTime,
+    matchScore: matchScore,
+    matchWinner: matchWinner
 }
