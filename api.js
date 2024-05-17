@@ -20,9 +20,9 @@ app.get('/', (req, res) => {
     res.send('RummikubApp-Node Root');
 })
 
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use('/api', router);  // Set base api route
 
 //Middleware always called before any other route
@@ -35,7 +35,7 @@ router.use((request, response, next) => {
 //Player Routes
 
 //Pull all players from database
-router.route('/players').get((request, response)=>{
+router.route('/players').get((request, response) => {
     Db.getPlayers().then(result => {
         console.log(result);
         response.json(result[0]);
@@ -43,25 +43,32 @@ router.route('/players').get((request, response)=>{
 })
 
 //Pull a specific player from database
-router.route('/player/:tag').get((request, response)=>{
+router.route('/player/:tag').get((request, response) => {
     Db.getPlayer_tag(request.params.tag).then(result => {
         //console.log(result);
         response.json(result[0]);
     })
 })
 
+
+app.get('/test', (req, res) => {
+    res.send('hello')
+})
+
 //Add a new player to the database
-router.route('/addPlayer/:tag').post((request, response)=>{
-    Db.addPlayer(request.params.tag).then(result => {
-        //console.log(result);
-        response.json(result).status(201);
+router.route('/addPlayer').post(async (req, res) => {
+    const {tag} = req.body
+    console.log(tag)
+    await Db.addPlayer(tag).then(result => {
+        // console.log(result);
+        res.json(result).status(201);
     })
 })
 
 //Match Routes
 
 //Pull a specific match from database
-router.route('/match/:gameCode').get((request, response)=>{
+router.route('/match/:gameCode').get((request, response) => {
     Db.getMatch_gameCode(request.params.gameCode).then(result => {
         //console.log(result);
         response.json(result);
@@ -69,7 +76,7 @@ router.route('/match/:gameCode').get((request, response)=>{
 })
 
 //Add a new match to the database
-router.route('/addMatch/:p1Minutes/:p1Seconds/:p1Milli/:p1MatchScore/:p2Minutes/:p2Seconds/:p2Milli/:p2MatchScore/:roundCount/:p1/:p2').post((request, response)=>{
+router.route('/addMatch/:p1Minutes/:p1Seconds/:p1Milli/:p1MatchScore/:p2Minutes/:p2Seconds/:p2Milli/:p2MatchScore/:roundCount/:p1/:p2').post((request, response) => {
     Db.addMatch(request.params.p1Minutes, request.params.p1Seconds, request.params.p1Milli,
         request.params.p1MatchScore, request.params.p2Minutes, request.params.p2Seconds,
         request.params.p2Milli, request.params.p2MatchScore, request.params.roundCount, request.params.p1, request.params.p2
@@ -91,7 +98,7 @@ router.route('/addMatch/:p1Minutes/:p1Seconds/:p1Milli/:p1MatchScore/:p2Minutes/
 //})
 
 //Update match times on play or pause button hit
-router.route('/updateMatch_time/:p1Minutes/:p1Seconds/:p1Milli/:p2Minutes/:p2Seconds/:p2Milli/:gameCode').put((request, response)=>{
+router.route('/updateMatch_time/:p1Minutes/:p1Seconds/:p1Milli/:p2Minutes/:p2Seconds/:p2Milli/:gameCode').put((request, response) => {
     Db.updateMatch_time(request.params.p1Minutes, request.params.p1Seconds, request.params.p1Milli,
         request.params.p2Minutes, request.params.p2Seconds, request.params.p2Milli, request.params.gameCode
     ).then(result => {
@@ -101,7 +108,7 @@ router.route('/updateMatch_time/:p1Minutes/:p1Seconds/:p1Milli/:p2Minutes/:p2Sec
 })
 
 //Update match scores on submit round scores hit
-router.route('/updateMatch_score/:p1MatchScore/:p2MatchScore/:roundCount/:gameCode').put((request, response)=>{
+router.route('/updateMatch_score/:p1MatchScore/:p2MatchScore/:roundCount/:gameCode').put((request, response) => {
     Db.updateMatch_score(request.params.p1MatchScore, request.params.p2MatchScore, request.params.roundCount, request.params.gameCode
     ).then(result => {
         //console.log(result);
@@ -110,7 +117,7 @@ router.route('/updateMatch_score/:p1MatchScore/:p2MatchScore/:roundCount/:gameCo
 })
 
 //Update match winner on Report match hit
-router.route('/updateMatch_winner/:winner/:gameCode').put((request, response)=>{
+router.route('/updateMatch_winner/:winner/:gameCode').put((request, response) => {
     Db.updateMatch_winner(request.params.winner, request.params.gameCode
     ).then(result => {
         //console.log(result);
