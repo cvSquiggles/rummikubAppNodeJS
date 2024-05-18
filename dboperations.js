@@ -47,6 +47,27 @@ async function getPlayer(tag) {
     }
 }
 
+//Search a player record based on id
+async function getPlayer_id(id) {
+    try {
+        let pool = await sql.connect(config);
+        console.log('pool', pool);
+        let player = await pool.request()
+            .input('id', sql.Int, id)
+            .query("SELECT * FROM Player WHERE id=@id");
+        pool.close();
+        //console.log(`Here's the check: ${player.recordset.length}`)
+        if (player.recordset.length > 0) {
+            return player.recordset;
+        } else {
+            return false;
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 //Search a player record based on tag
 async function addPlayer(tag) {
     try {
@@ -160,6 +181,7 @@ async function matchWinner(winner, gameCode) {
 module.exports = {
     getPlayers: getPlayers,
     getPlayer: getPlayer,
+    getPlayer_id: getPlayer_id,
     addPlayer: addPlayer,
     getMatch: getMatch,
     addMatch: addMatch,

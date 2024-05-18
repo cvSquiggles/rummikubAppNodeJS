@@ -42,11 +42,25 @@ router.route('/players').get((request, response) => {
     })
 })
 
-//Pull a specific player from database
+//Pull a specific player from database by tag
 router.route('/player').post((req, res) => {
     const {tag} = req.body;
     console.log(tag)
     Db.getPlayer(tag).then(result => {
+        if(result !== false){
+            res.json(result[0]);
+        } else {
+            res.json({ id: 0, tag: "FAILED"});
+        }
+        
+    })
+})
+
+//Pull a specific player from database by id
+router.route('/player_id').post((req, res) => {
+    const {id} = req.body;
+    console.log(id)
+    Db.getPlayer_id(id).then(result => {
         if(result !== false){
             res.json(result[0]);
         } else {
