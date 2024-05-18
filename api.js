@@ -104,7 +104,7 @@ router.route('/match').post((req, res) => {
 router.route('/match_latest').post((req, res) => {
     Db.getMatch_latest().then(result => {
         if(result !== false){
-            res.json(result[0]);
+            res.json({gameCode: result[0].gameCode}).status(201);
         } else {
             res.json({ gameCode: "FAILED"});
         }
@@ -118,7 +118,7 @@ router.route('/addMatch').post((req, res) => {
     Db.addMatch(p1, p2
     ).then(result => {
         //console.log(result);
-        res.json({gameCode: result[0].gameCode}).status(201);
+        res.json(result).status(201);
     })
 })
 
