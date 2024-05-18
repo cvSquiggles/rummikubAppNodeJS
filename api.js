@@ -50,7 +50,7 @@ router.route('/player').post((req, res) => {
         if(result !== false){
             res.json(result[0]);
         } else {
-            res.json({});
+            res.json({ id: 0, tag: "FAILED"});
         }
         
     })
