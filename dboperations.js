@@ -76,8 +76,11 @@ async function getMatch(gameCode) {
             .query("SELECT * FROM Match WHERE gameCode=@match_gameCode");
         pool.close();
         // }
-        console.log(match)
-        return match.recordset;
+        if (match.recordset.length > 0){
+            return match.recordset;
+        } else{
+            return false;
+        }
     } catch (error) {
         console.log(error);
     }

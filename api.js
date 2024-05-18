@@ -78,8 +78,11 @@ router.route('/match').post((req, res) => {
     const {gameCode} = req.body;
     console.log(gameCode)
     Db.getMatch(gameCode).then(result => {
-        //console.log(result);
-        res.json(result);
+        if(result !== false){
+            res.json(result[0]);
+        } else {
+            res.json({ gameCode: "FAILED"});
+        }
     })
 })
 
