@@ -100,6 +100,17 @@ router.route('/match').post((req, res) => {
     })
 })
 
+//Pull a specific match from database
+router.route('/match_latest').post((req, res) => {
+    Db.getMatch_latest().then(result => {
+        if(result !== false){
+            res.json(result[0]);
+        } else {
+            res.json({ gameCode: "FAILED"});
+        }
+    })
+})
+
 //Add a new match to the database
 router.route('/addMatch').post((req, res) => {
     const {p1, p2} = req.body;
@@ -107,7 +118,7 @@ router.route('/addMatch').post((req, res) => {
     Db.addMatch(p1, p2
     ).then(result => {
         //console.log(result);
-        res.json(result).status(201);
+        res.json({gameCode: result[0].gameCode}).status(201);
     })
 })
 

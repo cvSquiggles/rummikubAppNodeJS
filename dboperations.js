@@ -107,6 +107,26 @@ async function getMatch(gameCode) {
     }
 }
 
+//Get the latest match created in the database
+//Search a match record base on gameCode
+async function getMatch_latest() {
+    try {
+        let pool = await sql.connect(config);
+        // if(pool){
+            let match = await pool.request()
+            .query("SELECT MAX(gameCode) as gameCode FROM match");
+        pool.close();
+        // }
+        if (match.recordset.length > 0){
+            return match.recordset;
+        } else{
+            return false;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 //Add a match record base on gameCode
 async function addMatch(p1, p2) {
     try {
@@ -117,7 +137,7 @@ async function addMatch(p1, p2) {
             .input('p2', sql.Int, p2)
             .query("INSERT INTO Match VALUES (30, 0, 0, 0, 30, 0, 0, 0, 1, @p1, @p2, NULL)");
         pool.close();
-        //return addMatch.recordsets;
+        return addMatch.recordset;
     } catch (error) {
         console.log(error);
     }
@@ -184,6 +204,7 @@ module.exports = {
     getPlayer_id: getPlayer_id,
     addPlayer: addPlayer,
     getMatch: getMatch,
+    getMatch_latest: getMatch_latest,
     addMatch: addMatch,
     matchTime: matchTime,
     matchScore: matchScore,
