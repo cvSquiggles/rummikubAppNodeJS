@@ -47,8 +47,12 @@ router.route('/player').post((req, res) => {
     const {tag} = req.body;
     console.log(tag)
     Db.getPlayer(tag).then(result => {
-        //console.log(result);
-        res.json(result[0]);
+        if(result !== false){
+            res.json(result[0]);
+        } else {
+            res.json({});
+        }
+        
     })
 })
 

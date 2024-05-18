@@ -35,7 +35,13 @@ async function getPlayer(tag) {
             .input('tag', sql.VarChar, tag)
             .query("SELECT * FROM Player WHERE tag=@tag");
         pool.close();
-        return player.recordset;
+        //console.log(`Here's the check: ${player.recordset.length}`)
+        if (player.recordset.length > 0) {
+            return player.recordset;
+        } else {
+            return false;
+        }
+
     } catch (error) {
         console.log(error);
     }
